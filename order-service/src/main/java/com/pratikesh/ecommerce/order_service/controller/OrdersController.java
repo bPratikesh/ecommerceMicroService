@@ -20,6 +20,14 @@ import java.util.List;
 public class OrdersController {
 
     private final OrderService orderService;
+
+    @GetMapping("/hello")
+    public String dummyService(){
+        return "Hello from order service";
+    }
+
+
+
     @GetMapping
     public ResponseEntity<List<OrderRequestDto>> getAllOrders(HttpServletRequest httpServletRequest) {
         log.info("Fetching all orders via controller");
