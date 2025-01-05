@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: api-gateway
+
+#API gateway config
+  cloud:
+    gateway:
+      routes:
+        - id: order-service
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/orders/**
+
+        - id: inventory-service
+          uri: lb://INVENTORY-SERVICE
+          predicates:
+            - Path=/inventory/**
+
+#Eureka config
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka

@@ -2,7 +2,6 @@ package com.pratikesh.ecommerce.inventory_service.controller;
 
 import com.pratikesh.ecommerce.inventory_service.dto.ProductDto;
 import com.pratikesh.ecommerce.inventory_service.service.ProductService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.ServiceInstance;
@@ -32,7 +31,7 @@ public class ProductController {
         ServiceInstance orderService = discoveryClient.getInstances("order-service").getFirst();
 
         String response = restClient.get()
-                .uri(orderService.getUri()+"/api/v1/orders/hello")
+                .uri(orderService.getUri()+"/orders/core/hello")
                 .retrieve()
                 .body(String.class);
 
