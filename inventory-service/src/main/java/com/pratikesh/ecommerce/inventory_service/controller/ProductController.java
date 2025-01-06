@@ -2,6 +2,7 @@ package com.pratikesh.ecommerce.inventory_service.controller;
 
 import com.pratikesh.ecommerce.inventory_service.dto.ProductDto;
 import com.pratikesh.ecommerce.inventory_service.service.ProductService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.ServiceInstance;
@@ -27,7 +28,9 @@ public class ProductController {
 
 
     @GetMapping("/fetchOrder")
-    public String fetchApiFromOrderService(){
+    public String fetchApiFromOrderService(HttpServletRequest httpServletRequest){
+        log.info(httpServletRequest.getHeader("x-custom-header"));
+
         ServiceInstance orderService = discoveryClient.getInstances("order-service").getFirst();
 
         String response = restClient.get()
