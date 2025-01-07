@@ -6,6 +6,9 @@ import com.pratikesh.ecommerce.order_service.entity.OrderItem;
 import com.pratikesh.ecommerce.order_service.entity.OrderStatus;
 import com.pratikesh.ecommerce.order_service.entity.Orders;
 import com.pratikesh.ecommerce.order_service.repository.OrdersRepo;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -37,7 +40,11 @@ public class OrderService {
         return modelMapper.map(orders, OrderRequestDto.class);
     }
 
+    //@Retry(name = "inventoryRetry", fallbackMethod = "createOrderFallback")
+    @CircuitBreaker(name = "inventoryCircuitBreaker", fallbackMethod = "createOrderFallback")
+    //@RateLimiter(name = "inventoryRateLimiter", fallbackMethod = "createOrderFallback")
     public OrderRequestDto createOrder(OrderRequestDto orderRequestDto) {
+        log.info("Calling the orderService");
         Double totalPrice = inventoryFeignClient.reduceStocks(orderRequestDto);
 
         Orders orders = modelMapper.map(orderRequestDto, Orders.class);
@@ -50,4 +57,11 @@ public class OrderService {
         Orders savedOrder = ordersRepo.save(orders);
         return modelMapper.map(savedOrder, OrderRequestDto.class);
     }
-}
+
+    public OrderRequestDto createOrderFallback(OrderRequestDto orderRequestDto, Throwable throwable) {
+        log.error("Fallback occured due to: {}", throwable.getMessage());
+
+        return new OrderRequestDto();
+    }
+
+    }
